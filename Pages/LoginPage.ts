@@ -1,12 +1,19 @@
+import { type Page, type Locator } from '@playwright/test';
+
 class LoginPage {
-  constructor(page) {
+  readonly page: Page;
+  readonly signInButton: Locator;
+  readonly username: Locator;
+  readonly password: Locator;
+
+  constructor(page: Page) {
     this.page = page;
     this.signInButton = page.locator('#login');
     this.username = page.locator('#userEmail');
     this.password = page.locator('#userPassword');
   }
 
-  async doLogin(email, password) {
+  async doLogin(email: string, password: string) {
     await this.username.fill(email);
     await this.password.fill(password);
     await this.signInButton.click();

@@ -1,7 +1,16 @@
-import { expect } from '@playwright/test';
+import { expect, type Page, type Locator } from '@playwright/test';
 
 export default class CartPage {
-  constructor(page) {
+  readonly page: Page;
+  readonly cartButton: Locator;
+  readonly cartProducts: Locator;
+  readonly checkoutButton: Locator;
+  readonly countryOptions: Locator;
+  readonly clientEmailInput: Locator;
+  readonly submitButton: Locator;
+  readonly countryInput: Locator;
+
+  constructor(page: Page) {
     this.page = page;
     this.cartButton = page.locator('[routerlink*="cart"]');
     this.cartProducts = page.locator('div li');
@@ -12,17 +21,15 @@ export default class CartPage {
     this.countryInput = page.locator("[placeholder*='Country']");
   }
 
-  async checkIfProductIsInCart(productNameToBuy) {
-    await expect(
-      await this.getProductTitleInCart(productNameToBuy)
-    ).toBeVisible();
+  async checkIfProductIsInCart(productNameToBuy: string) {
+    await expect(this.getProductTitleInCart(productNameToBuy)).toBeVisible();
     const isProductNameToBuyOnCart = await this.getProductTitleInCart(
       productNameToBuy
     ).isVisible();
-    expect(await isProductNameToBuyOnCart).toBeTruthy();
+    expect(isProductNameToBuyOnCart).toBeTruthy();
   }
 
-  getProductTitleInCart(productNameToBuy) {
+  getProductTitleInCart(productNameToBuy: string) {
     return this.page.locator(`h3:has-text("${productNameToBuy}")`);
   }
 
@@ -30,7 +37,7 @@ export default class CartPage {
     await this.checkoutButton.click();
   }
 
-  async doCheckout(countryPress, country, email) {
+  async doCheckout(countryPress: string, country: string, email: string) {
     await this.countryInput.pressSequentially(countryPress);
 
     const options = this.countryOptions;
@@ -43,7 +50,7 @@ export default class CartPage {
     await this.submitButton.click();
   }
 
-  returnCountryOption(options, country) {
+  returnCountryOption(options: Locator, country: string) {
     return options.locator(`text=${country}`);
   }
 }

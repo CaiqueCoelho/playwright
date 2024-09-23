@@ -1,6 +1,6 @@
-const { test, expect } = require('@playwright/test');
-const { customTest } = require('../utils/test-base');
-const { default: POManager } = require('../Pages/POManager');
+import { test, expect } from '@playwright/test';
+import { customTest } from '../utils/test-base';
+import { POManager } from '../Pages/POManager';
 const dataset = JSON.parse(
   JSON.stringify(require('../utils/placeOrderTestData.json'))
 );
@@ -38,7 +38,8 @@ dataset.forEach((data, index) => {
     await expect(page.locator('.hero-primary')).toHaveText(
       ' Thankyou for the order. '
     );
-    let orderId = await page
+    let orderId: any;
+    orderId = await page
       .locator('.em-spacer-1 .ng-star-inserted')
       .textContent();
     orderId = orderId.replaceAll('|', '').trim();
@@ -93,7 +94,7 @@ customTest(
     await expect(page.locator('.hero-primary')).toHaveText(
       ' Thankyou for the order. '
     );
-    let orderId = await page
+    let orderId: any = await page
       .locator('.em-spacer-1 .ng-star-inserted')
       .textContent();
     orderId = orderId.replaceAll('|', '').trim();

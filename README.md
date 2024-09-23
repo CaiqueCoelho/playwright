@@ -16,3 +16,10 @@ SHIFT + COMMAND + P : debug npm script
 
 java -jar jenkins.war -httpPort=9090
 java -jar jenkins.war -httpPort=9090 --enable-future-java
+
+Compile ts to js and run js file
+
+```
+tsc demo1.ts
+node demo1.ts
+```
