@@ -165,6 +165,7 @@ test.describe('Task Update', () => {
 
         await expect(page).toHaveScreenshot();
 
+        // Taking only the input element
         await expect(page.locator('#newTask')).toHaveScreenshot('inputTaskElement.png');
     })
 })
