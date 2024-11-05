@@ -1,6 +1,6 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
-
+require('dotenv').config();
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -27,7 +27,7 @@ module.exports = defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: undefined,
+  workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -42,38 +42,55 @@ module.exports = defineConfig({
     ignoreHTTPSErrors: true,
     permissions: ['geolocation'],
     video: 'retain-on-failure',
+    baseURL: process.env.BASE_URL
   },
 
   /* Configure projects for major browsers */
   projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+    // {
+    //   name: 'chromium',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
 
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-    {
-      name: 'iphone11',
-      use: {
-        /* Base URL to use in actions like `await page.goto('/')`. */
-        // baseURL: 'http://127.0.0.1:3000',
-        browserName: 'webkit',
-        headless: true,
-        /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-        trace: 'retain-on-failure',
-        screenshot: 'only-on-failure',
-        ignoreHTTPSErrors: true,
-        ...devices['iPhone 11'],
+      name: 'course2',
+      testMatch: "**/course-2/**.spec.ts",
+      use: { 
+        ...devices['Desktop Firefox'],
+        baseURL: 'http://localhost:8080'
       },
     },
+    {
+      name: 'course1',
+      testMatch: "**/course-1/**.spec.js",
+      use: { 
+        ...devices['Desktop Firefox'],
+      },
+    },
+
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
+    // {
+    //   name: 'iphone11',
+    //   use: {
+    //     /* Base URL to use in actions like `await page.goto('/')`. */
+    //     // baseURL: 'http://127.0.0.1:3000',
+    //     browserName: 'webkit',
+    //     headless: true,
+    //     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    //     trace: 'retain-on-failure',
+    //     screenshot: 'only-on-failure',
+    //     ignoreHTTPSErrors: true,
+    //     ...devices['iPhone 11'],
+    //   },
+    // },
 
     /* Test against mobile viewports. */
     // {

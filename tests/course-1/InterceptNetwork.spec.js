@@ -1,5 +1,5 @@
-const { test, request, expect } = require('@playwright/test');
-const { default: APIUtils } = require('../utils/utils');
+const { test, request, expect, Page } = require('@playwright/test');
+const { default: APIUtils } = require('../../utils/utils');
 
 const orderPayload = {
   orders: [
@@ -110,4 +110,53 @@ test('Aborting a request to get the css or images(jpg,png,jpeg) and also logging
 
   const titles = await page.locator('.card-body b').allTextContents();
   console.log(titles);
+});
+
+async function getFulfilledResponse(page) {
+
+  return page.waitForResponse(async (res) => {
+    if(!res.url().includes('/api/ecom/order/get-orders-for-customer/')) {
+      return false
+    }
+
+    const responseBody = await res.json();
+    return responseBody.data.length > 0
+  })
+}
+
+test('Intercept orders API', async ({
+  page,
+}) => {
+  const responsePromise = getFulfilledResponse(page)
+  page.route('**/*.{css,jpg,png,jpeg}', (route) => route.abort());
+  // Listen for the request calls
+  page.on('request', (request) => console.log(request.url()));
+  page.on('response', (response) =>
+    console.log(response.url(), response.status())
+  );
+  await page.goto('https://rahulshettyacademy.com/client');
+  const email = 'caiquedpfc@gmail.com';
+
+  const username = page.locator('#userEmail');
+  const password = page.locator('#userPassword');
+  const loginBtn = page.locator('#login');
+
+  await username.fill(email);
+  await password.fill('$7DHhQP@PhiK8N');
+  await loginBtn.click();
+
+  // wait until the newtwork calls has finished
+  // await page.waitForLoadState('networkidle');
+  // wait until the element is visible
+  await page.locator('.card-body b').first().waitFor();
+
+  const titles = await page.locator('.card-body b').allTextContents();
+  console.log(titles);
+
+  page.locator('[routerlink="/dashboard/myorders"]').click()
+  const response = await responsePromise
+  const responseBody = await response.json();
+  console.log(responseBody);
+  expect(responseBody.data).toBeTruthy();
+  await expect(page.getByRole("rowheader", { name: responseBody.data[0]._id})).toBeVisible();
 });

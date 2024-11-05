@@ -1,14 +1,20 @@
+import { type Page, type Locator } from '@playwright/test';
 import { expect } from '@playwright/test';
 
 export default class DashboardPage {
-  constructor(page) {
+  readonly page: Page;
+  readonly products: Locator;
+  readonly productsText: Locator;
+  readonly cartButton: Locator;
+
+  constructor(page: Page) {
     this.page = page;
     this.products = page.locator('.card-body');
     this.productsText = page.locator('.card-body b');
     this.cartButton = page.locator('[routerlink*="cart"]');
   }
 
-  async searchProduct(productName) {
+  async searchProduct(productName: string) {
     await this.productsText.first().waitFor();
 
     const titles = await this.productsText.allTextContents();
@@ -36,7 +42,7 @@ export default class DashboardPage {
     return productIndexToBuy;
   }
 
-  async addProductToCart(productIndexToBuy) {
+  async addProductToCart(productIndexToBuy: number) {
     await this.products
       .nth(productIndexToBuy)
       .locator('text= Add To Cart')

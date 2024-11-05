@@ -1,5 +1,9 @@
-const { test, request, expect } = require('@playwright/test');
-const { default: APIUtils } = require('../utils/utils');
+// Login just once via UI and store session information in .json and inject this data on the next tests
+
+import test, { expect } from '@playwright/test';
+import { APIUtils } from '../../utils/utils';
+import { request } from 'http';
+let webContext;
 
 const orderPayload = {
   orders: [
@@ -15,29 +19,29 @@ const loginPayload = {
   userPassword: '$7DHhQP@PhiK8N',
 };
 
-let token;
-let orderId;
-let apiUtils;
+test.beforeAll(async ({ browser }) => {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto('https://rahulshettyacademy.com/client');
+  const email = 'caiquedpfc@gmail.com';
 
-test.beforeAll(async ({}) => {
-  apiUtils = new APIUtils(await request.newContext(), loginPayload);
-  const response = await apiUtils.createOrder(orderPayload);
-  token = response.token;
-  orderId = response.orderId;
+  const username = page.locator('#userEmail');
+  const password = page.locator('#userPassword');
+  const loginBtn = page.locator('#login');
+  await username.fill(email);
+  await password.fill('$7DHhQP@PhiK8N');
+  await loginBtn.click();
+  await page.waitForLoadState('networkidle');
+  await context.storageState({ path: 'state.json' });
+  webContext = await browser.newContext({ storageState: 'state.json' });
 });
 
-test('@API Place an order with login by API flow', async ({ page }) => {
+test('@API Login via UI and store session', async () => {
   const email = 'caiquedpfc@gmail.com';
+  const page = await webContext.newPage();
+  await page.goto('https://rahulshettyacademy.com/client');
   const products = page.locator('.card-body');
   const productNameToBuy = 'ZARA COAT 3';
-
-  const apiUtils = new APIUtils(await request.newContext(), loginPayload);
-  const token = await apiUtils.getToken();
-  page.addInitScript((value) => {
-    window.localStorage.setItem('token', value);
-  }, token);
-
-  await page.goto('https://rahulshettyacademy.com/client');
 
   // wait until the newtwork calls has finished
   // await page.waitForLoadState('networkidle');
@@ -111,29 +115,21 @@ test('@API Place an order with login by API flow', async ({ page }) => {
   expect(orderIdDetailsPage).toContain(orderId);
 });
 
-test('@API Place order by API and see on the UI if the order is on Order history', async ({
-  page,
-}) => {
-  // const { orderId, token } = await apiUtils.createOrder(orderPayload);
-  page.addInitScript((value) => {
-    window.localStorage.setItem('token', value);
-  }, token);
-
+test('@API Login via UI and store session 2', async () => {
+  const page = await webContext.newPage();
   await page.goto('https://rahulshettyacademy.com/client');
 
-  await page.locator('button[routerlink*="myorders"]').click();
-  await expect(page).toHaveURL(/myorders/);
+  const productNameToBuy = 'ZARA COAT 3';
 
-  await page.locator('tbody').waitFor();
-  await page.locator(`text=${orderId}`).waitFor();
-  await expect(page.locator(`text=${orderId}`)).toBeVisible();
-  await page
-    .locator(`text=${orderId}`)
-    .locator('..')
-    .locator('button')
-    .first()
-    .click();
-  await expect(page).toHaveURL(/order-details/);
-  const orderIdDetailsPage = await page.locator('.col-text').textContent();
-  expect(orderIdDetailsPage).toContain(orderId);
+  // wait until the newtwork calls has finished
+  // await page.waitForLoadState('networkidle');
+  // wait until the element is visible
+  await page.locator('.card-body b').first().waitFor();
+
+  const titles = await page.locator('.card-body b').allTextContents();
+  console.log(titles);
+
+  await expect(page.locator('.card-body b').first()).toContainText(
+    productNameToBuy
+  );
 });
