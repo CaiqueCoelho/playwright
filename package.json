@@ -7,15 +7,18 @@
     "regression": "npx playwright test --project=chromium",
     "webTests": "npx playwright test --project=chromium --grep @Web",
     "APITests": "npx playwright test --project=chromium --grep @API",
-    "safariNewConfig": "npx playwright test --project=webkit --config=playwright.config1.ts"
+    "safariNewConfig": "npx playwright test --project=webkit --config=playwright.config1.ts",
+    "course2": "npx playwright test --project=course2"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@playwright/test": "^1.42.1",
     "@types/node": "^20.11.24",
     "allure-playwright": "^3.0.0-beta.7",
+    "dotenv": "^16.4.5",
     "typescript": "^5.5.4"
   },
   "dependencies": {

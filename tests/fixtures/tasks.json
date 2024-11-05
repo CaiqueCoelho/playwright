@@ -1,0 +1,34 @@
+{
+    "success": {
+        "name": "Ler um livro",
+        "is_done": false
+    }, 
+    "duplicate": {
+        "name": "Comprar Ketchup",
+        "is_done": false
+    }, 
+    "required": {
+        "name": "",
+        "is_done": false
+    },
+    "update": {
+        "name": "Pagar fatura do cartão",
+        "is_done": false
+    },
+    "delete": {
+        "name": "Comprar cerveja",
+        "is_done": false
+    },
+    "done1": {
+        "name": "Comprar cerveja 1",
+        "is_done": false
+    },
+    "done2": {
+        "name": "Comprar cerveja 22",
+        "is_done": false
+    },
+    "done3": {
+        "name": "Comprar cerveja 3",
+        "is_done": false
+    }
+}
